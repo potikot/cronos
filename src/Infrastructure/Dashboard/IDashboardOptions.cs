@@ -1,0 +1,1 @@
+namespace Cronos.Infrastructure.Dashboard;

@@ -1,0 +1,56 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+
+    <DefineConstants>$(DefineConstants);EOS_PLATFORM_WINDOWS_64</DefineConstants>
+    <EnablePrivateFeatures Condition="'$(EnablePrivateFeatures)' == ''">false</EnablePrivateFeatures>
+    <DefaultItemExcludes>$(DefaultItemExcludes);private/**</DefaultItemExcludes>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(EnablePrivateFeatures)' == 'true'">
+    <DefineConstants>$(DefineConstants);PRIVATE</DefineConstants>
+    <OutputPath>bin/private/$(Configuration)/</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HtmlAgilityPack" Version="1.12.2" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.0-rc.1.25451.107" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.0-rc.1.25451.107" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.0-rc.1.25451.107" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4-beta1" />
+    <PackageReference Include="TextCopy" Version="6.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json"
+          CopyToOutputDirectory="PreserveNewest"
+          CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="private/**/*"
+          Exclude="private/src/**/*.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(EnablePrivateFeatures)' == 'true'">
+    <Compile Include="private/src/**/*.cs" />
+    <None Update="private/appsettings.private.json"
+          TargetPath="appsettings.private.json"
+          CopyToOutputDirectory="PreserveNewest"
+          CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="Exists('private/src') And ('$(DesignTimeBuild)' == 'true' Or '$(JetBrainsDesignTimeBuild)' == 'true')">
+    <DefineConstants>$(DefineConstants);PRIVATE</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(EnablePrivateFeatures)' != 'true' And ('$(DesignTimeBuild)' == 'true' Or '$(JetBrainsDesignTimeBuild)' == 'true')">
+    <Compile Include="private/src/**/*.cs" />
+  </ItemGroup>
+
+</Project>
